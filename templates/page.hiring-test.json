@@ -1,0 +1,14 @@
+{
+  "sections": {
+    "banner": {
+      "type": "hiring-test-banner"
+    },
+    "grid": {
+      "type": "hiring-test-grid"
+    }
+  },
+  "order": [
+    "banner",
+    "grid"
+  ]
+}

@@ -1,0 +1,132 @@
+{% comment %}
+ Hiring Test - Banner section
+
+ current requirements:
+ ALL text editable in customiser
+ Two animated buttons with hover effects
+    Background image editable in customiser
+{% endcomment %}
+
+//* Banner section*//
+
+<section class="ht-banner">
+  <div class="ht-banner__content" style="{%  if section.settings.bg_image != blank %}--ht-bg:url('{{ section.settings.bg_image | image_url: width: 2000 }}');{% endif %}">
+  
+    <div class="ht-banner-inner">
+
+        <div class="ht-banner__topbar">
+            <div class="ht-banner__brand">
+                {{ section.settings.brand_text | escape}}
+            </div>
+            <div class="ht-banner__tagline">
+                {{ section.settings.tagline_text | escape}}
+            </div>
+
+            {%  if section.settings.top_cta_label != blank and section.settings.top_cta_url != blank %}
+                <a class="ht-btn ht-btn--yellow" href="{{ section.settings.top_cta_url}}">
+                    <span class="ht-btn__label">{{ section.settings.top_cta_label }}</span>
+                    <span class="ht-btn__icon" area-hidden="true">→</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>    
+        
+        <div class="ht-banner__content">
+            <h1 class="ht-banner__title">{{ section.settings.title_text | escape}}</h1>
+
+            {%  if section.settings.body_text != blank %}
+                <p class="ht-banner__desc">{{ section.settings.body_text | escape}}</p>
+            {% endif %}
+         </div>
+        
+         {%  if section.settings.strip_text != blank %}
+            <div class="ht-banner__strip">
+                {{ section.settings.strip_text }}
+            </div>
+         {% endif %}
+  </div> 
+</section>    
+
+// * End of Banner section *//
+
+// Styling of banner elements below//
+<style>
+.ht-banner {
+  background-image: var(--ht-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  background-color: #000; /* fallback */
+
+  position: relative;
+  width: 100%;
+  min-height: 520px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.ht-banner__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 0;
+}
+
+.ht-banner__topbar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+}
+
+.ht-banner__brand {
+    justify-self: start;
+    color: #111;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ht-banner__tagline {
+    justify-self: center;
+    color: #333;
+    text-align: center;
+}
+
+.ht-banner__content {
+    margin-top: 120px;
+    max-width: 520px;
+}
+
+.ht-banner__title {
+    font-size: 54px;
+    line-height: 1.1;
+    color: #111;
+    margin: 0 0 14px;
+}
+
+.ht-banner__desc {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #333;
+    margin: 0 0 24px;
+    max-width: 450px;
+}
+
+.ht-banner__strip {
+    margin-top: 120px;
+    background: rgba(214, 210, 201, 0.85);
+    color: #2b2b2b;
+    padding: 10px 12px;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+
+
+
+
+
+
+</style>
