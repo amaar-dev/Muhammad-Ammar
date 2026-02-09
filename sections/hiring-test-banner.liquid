@@ -124,9 +124,156 @@
     width: 100%;
     border-top: 1px solid rgba(0, 0, 0, 0.10);
 
+/* Button styles */
+
+.ht-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    justify-content: center;
+    
+    padding: 14px 28px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em
+
+    overflow: hidden;
+    cursor: pointer;
+    transition: color 220ms ease, border-color 220ms ease;
+    -webkit-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+
+}
+
+.ht-btn__label,
+.ht-btn__icon {
+    position: relative;
+    z-index: 2;
+}
+/* Animation for button hover*/
+
+.ht-btn::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transition: opacity 220ms ease;
+  z-index: 1;
+}
+
+.ht-btn:hover::before {
+    width: 100%;
+}
 
 
+/* yellow to black animation */
+.ht-btn--yellow {
+    justify-self: end;
+    color: #111;
+    background: #f1d400;
+    border-color: #111;
+}
 
+.ht-btn--yellow::before {
+    background: #111;
+}
+
+.ht-btn--yellow:hover {
+    color: #f1d400;
+    border-color: #111;
+}
+
+/*Black to yellow animation*/
+.ht-btn--black {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+.ht-btn--black::before {
+    background: #f1d400;
+}
+.ht-btn--black:hover {
+    color: #111;
+    border-color: #f1d400;
+}
 
 
 </style>
+
+/* Schema*/
+
+{% schema %}
+{
+  "name": "Hiring Test - Banner",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "brand_text",
+      "label": "Top left Brand text",
+      "default": "TISSOT"
+    },
+    {
+      "type": "text",
+      "id": "tagline_text",
+      "label": "Top centerTagline text",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "top_cta_label",
+      "label": "Top right button label",
+      "default": "Choose Gift"
+    },
+    {
+      "type": "url",
+      "id": "top_cta_url",
+      "label": "Top button link"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main Heading",
+      "default": "Your Ultimate Gift Guide"
+    },
+    {
+      "type": "textarea",
+      "id": "body_text",
+      "label": "Description",
+      "default": "Discover joy with our curated gift selection. \nFind the perfect present for every occasion and make moments unforgettable."
+    },
+    {
+      "type": "text",
+      "id": "strip_text",
+      "label": "Bottom strip text",
+      "default": "<p>Free shipping on orders over $100</p>"
+    },
+    {
+      "type": "text",
+      "id": "bottom_cta_label",
+      "label": "bottom right button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "bottom_cta_url",
+      "label": "Bottom button link"
+    }
+
+
+
+  ],
+  "presets": [
+    {
+      "name": "Hiring Test - Banner"
+    }
+  ]
+}
+{% endschema %}
