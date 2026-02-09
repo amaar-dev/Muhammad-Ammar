@@ -5,9 +5,9 @@
  ALL text editable in customiser
  Two animated buttons with hover effects
     Background image editable in customiser
-{% endcomment %}
 
 //* Banner section*//
+{% endcomment %}
 
 <section class="ht-banner">
   <div class="ht-banner__content" style="{%  if section.settings.bg_image != blank %}--ht-bg:url('{{ section.settings.bg_image | image_url: width: 2000 }}');{% endif %}">
@@ -25,7 +25,7 @@
             {%  if section.settings.top_cta_label != blank and section.settings.top_cta_url != blank %}
                 <a class="ht-btn ht-btn--yellow" href="{{ section.settings.top_cta_url}}">
                     <span class="ht-btn__label">{{ section.settings.top_cta_label }}</span>
-                    <span class="ht-btn__icon" area-hidden="true">→</span>
+                    <span class="ht-btn__icon" aria-hidden="true">→</span>
                 </a>
             {% endif %}
         </div>
@@ -46,10 +46,12 @@
          {% endif %}
   </div> 
 </section>    
-
-// * End of Banner section *//
+{%comment %}
+  // * End of Banner section *//
 
 // Styling of banner elements below//
+{% endcomment %}
+
 <style>
 .ht-banner {
   background-image: var(--ht-bg);
@@ -123,8 +125,11 @@
     text-align: center;
     width: 100%;
     border-top: 1px solid rgba(0, 0, 0, 0.10);
+}
 
-/* Button styles */
+{%comment %}
+  /* Button Class styles */
+{% endcomment %}
 
 .ht-btn {
     display: inline-flex;
@@ -138,7 +143,7 @@
     font-weight: 700;
     text-decoration: none;
     text-transform: uppercase;
-    letter-spacing: 0.05em
+    letter-spacing: 0.05em;
 
     overflow: hidden;
     cursor: pointer;
@@ -154,7 +159,10 @@
     position: relative;
     z-index: 2;
 }
-/* Animation for button hover*/
+{%comment %}
+  /* Animation for button hover*/
+{% endcomment %}
+
 
 .ht-btn::before {
   content: "";
@@ -168,8 +176,10 @@
     width: 100%;
 }
 
+{%comment %}
+  /* yellow to black animation */
+{% endcomment %}
 
-/* yellow to black animation */
 .ht-btn--yellow {
     justify-self: end;
     color: #111;
@@ -185,8 +195,10 @@
     color: #f1d400;
     border-color: #111;
 }
+{%comment %}
+  /*Black to yellow animation*/
+{% endcomment %}
 
-/*Black to yellow animation*/
 .ht-btn--black {
     background: #111;
     color: #fff;
@@ -203,7 +215,10 @@
 
 </style>
 
-/* Schema*/
+{%comment %}
+  /* Schema*/
+
+{% endcomment %}
 
 {% schema %}
 {
