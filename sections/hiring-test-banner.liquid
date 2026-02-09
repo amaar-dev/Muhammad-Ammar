@@ -38,19 +38,19 @@
                 <p class="ht-banner__desc">{{ section.settings.body_text | escape}}</p>
             {% endif %}
          </div>
-        
-         {%  if section.settings.strip_text != blank %}
-            <div class="ht-banner__strip">
-                {{ section.settings.strip_text | escape}}
-            </div>
-         {% endif %}
-         {% if section.settings.bottom_cta_label != blank and section.settings.bottom_cta_url != blank  %}
+                 {% if section.settings.bottom_cta_label != blank and section.settings.bottom_cta_url != blank  %}
             <a class="ht-btn ht-btn--black" href="{{ section.settings.bottom_cta_url }}" aria-label="Shop now">
                 <span class="ht-btn__label">{{ section.settings.bottom_cta_label }}</span>
                 <span class="ht-btn__icon" aria-hidden="true">→</span>
             </a>
          {% endif %}
 </div> 
+         {%  if section.settings.strip_text != blank %}
+            <div class="ht-banner__strip">
+                {{ section.settings.strip_text | escape}}
+            </div>
+         {% endif %}
+
 </section>    
 {%comment %}
   // * End of Banner section *//
