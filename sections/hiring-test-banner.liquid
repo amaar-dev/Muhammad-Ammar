@@ -9,10 +9,10 @@
 //* Banner section*//
 {% endcomment %}
 
-<section class="ht-banner">
-  <div class="ht-banner__content" style="{%  if section.settings.bg_image != blank %}--ht-bg:url('{{ section.settings.bg_image | image_url: width: 2000 }}');{% endif %}">
+<section class="ht-banner" style="{%  if section.settings.bg_image != blank %}--ht-bg:url('{{ section.settings.bg_image | image_url: width: 2000 }}');{% endif %}">
   
-    <div class="ht-banner-inner">
+  <div class="ht-banner__wrapper"> 
+    <div class="ht-banner__inner">
 
         <div class="ht-banner__topbar">
             <div class="ht-banner__brand">
@@ -23,7 +23,7 @@
             </div>
 
             {%  if section.settings.top_cta_label != blank and section.settings.top_cta_url != blank %}
-                <a class="ht-btn ht-btn--yellow" href="{{ section.settings.top_cta_url}}">
+                <a class="ht-btn ht-btn--yellow" href="{{ section.settings.top_cta_url}}" aria-label="Choose gift">
                     <span class="ht-btn__label">{{ section.settings.top_cta_label }}</span>
                     <span class="ht-btn__icon" aria-hidden="true">→</span>
                 </a>
@@ -32,7 +32,7 @@
     </div>    
         
         <div class="ht-banner__content">
-            <h1 class="ht-banner__title">{{ section.settings.title_text | escape}}</h1>
+            <h1 class="ht-banner__title">{{ section.settings.heading | escape}}</h1>
 
             {%  if section.settings.body_text != blank %}
                 <p class="ht-banner__desc">{{ section.settings.body_text | escape}}</p>
@@ -41,10 +41,16 @@
         
          {%  if section.settings.strip_text != blank %}
             <div class="ht-banner__strip">
-                {{ section.settings.strip_text }}
+                {{ section.settings.strip_text | escape}}
             </div>
          {% endif %}
-  </div> 
+         {% if section.settings.bottom_cta_label != blank and section.settings.bottom_cta_url != blank  %}
+            <a class="ht-btn ht-btn--black" href="{{ section.settings.bottom_cta_url }}" aria-label="Shop now">
+                <span class="ht-btn__label">{{ section.settings.bottom_cta_label }}</span>
+                <span class="ht-btn__icon" aria-hidden="true">→</span>
+            </a>
+         {% endif %}
+</div> 
 </section>    
 {%comment %}
   // * End of Banner section *//
@@ -81,6 +87,9 @@
     align-items: center;
     gap: 20px;
 }
+.ht-banner__wrapper {
+    width: 100%;
+}
 
 .ht-banner__brand {
     justify-self: start;
@@ -94,6 +103,7 @@
     justify-self: center;
     color: #333;
     text-align: center;
+    font-size: 14px;
 }
 
 .ht-banner__content {
@@ -125,6 +135,8 @@
     text-align: center;
     width: 100%;
     border-top: 1px solid rgba(0, 0, 0, 0.10);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 {%comment %}
@@ -151,6 +163,8 @@
     -webkit-user-select: none;
     user-select: none;
     white-space: nowrap;
+    border: 2px solid transparent;
+    height: 44px;
 
 }
 
@@ -167,9 +181,12 @@
 .ht-btn::before {
   content: "";
   position: absolute;
-  width: 100%;
-  transition: opacity 220ms ease;
+  height: 100%;
+  transition: width 220ms ease;
   z-index: 1;
+  width: 0;
+  top: 0;
+  left: 0;
 }
 
 .ht-btn:hover::before {
@@ -184,7 +201,7 @@
     justify-self: end;
     color: #111;
     background: #f1d400;
-    border-color: #111;
+    border-color: #f1d400;
 }
 
 .ht-btn--yellow::before {
@@ -268,7 +285,7 @@
       "type": "text",
       "id": "strip_text",
       "label": "Bottom strip text",
-      "default": "<p>Free shipping on orders over $100</p>"
+      "default": "FREE SHIPPING ON ORDERS EXCEEDING $100!"
     },
     {
       "type": "text",
