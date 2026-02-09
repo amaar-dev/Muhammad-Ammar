@@ -51,24 +51,35 @@
 {% endcomment %}
 
 <style>
-  .ht-grid__inner{
-    padding-left: 51px; /* Figma: 51 from page border */
-    padding-right: 51px;
-  }
+    .ht-grid {
+  /* Outer section size + spacing */
+  padding-top: 90px;     /* outer section top */
+  padding-bottom: 50px;  /* inner section bottom spacing */
+}
 
-  .ht-grid__heading{
-    font-family: Lustria, serif;
-    font-weight: 400;
-    font-size: 36px;
-    line-height: 120%;
-    letter-spacing: 0;
-    margin: 90px 0 24px; /* top spacing from Figma, adjust if needed */
-  }
+
+
+  .ht-grid__inner {
+  /* Gutters: 51 left, ~49.5 right */
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: 51px;
+  padding-right: 49.5px;
+}
+  .ht-grid__heading {
+  font-family: Lustria, serif;
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 120%;
+  letter-spacing: 0;
+  margin: 0 0 30px; /* text to inner grid = 30px */
+}
 
   .ht-grid__grid{
     display: grid;
     grid-template-columns: repeat(3, 433px);
-    gap: 20px; /* Figma separation */
+    column-gap: 20px; /* Figma separation */
+    row-gap:20px;
   }
 
   .ht-card{
@@ -87,22 +98,20 @@
     display: block;
   }
 
-  .ht-card__trigger{
+  .ht-card__trigger {
     position: absolute;
     width: 22px;
     height: 22px;
-    top: 238px;   /* Figma */
-    left: 256.5px;/* Figma */
+    top: 238px;
+    left: 256.5px;
     border-radius: 50%;
     background: rgba(248, 248, 248, 0.9);
     border: 1.5px solid #000;
-    cursor: pointer;
     display: grid;
     place-items: center;
-    line-height: 1;
     padding: 0;
-  }
-
+    cursor: pointer;
+}
   /* Responsive: stack to 2 then 1 */
   @media (max-width: 1400px){
     .ht-grid__grid{ grid-template-columns: repeat(2, 433px); }
