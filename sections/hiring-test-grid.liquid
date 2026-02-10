@@ -46,8 +46,11 @@
     </div>
   </div>
 </section>
-
-   <div class="ht-modal" id="ht-modal" aria-hidden="true">
+{% comment %}
+    // * End of Grid section *//
+    // HTML for pop-up modal below */
+{% endcomment %}
+<div class="ht-modal" id="ht-modal" aria-hidden="true">
   <div class="ht-modal__overlay" data-ht-close></div>
 
   <div class="ht-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ht-modal-title">
@@ -65,28 +68,21 @@
       >
 
       <div class="ht-modal__info">
-        <h3 class="ht-modal__title" id="ht-modal-title">Product name</h3>
-        <p class="ht-modal__price">$0.00</p>
-        <p class="ht-modal__desc">Product description goes here.</p>
+        <h3 class="ht-modal__title" id="ht-modal-title"></h3>
+        <p class="ht-modal__price"></p>
+        <p class="ht-modal__desc"></p>
 
         <div class="ht-modal__variants">
-          <div class="ht-variant">
+          <!-- Color gets injected here -->
+          <div class="ht-variant" data-variant-block="color" style="display:none;">
             <span class="ht-variant__label">Color</span>
-            <div class="ht-variant__options">
-              <button type="button" class="ht-variant__btn is-active">Black</button>
-              <button type="button" class="ht-variant__btn">White</button>
-            </div>
+            <div class="ht-variant__options" data-variant="color"></div>
           </div>
 
-          <div class="ht-variant ht-variant--size">
+          <!-- Size gets injected here -->
+          <div class="ht-variant ht-variant--size" data-variant-block="size" style="display:none;">
             <label class="ht-variant__label" for="ht-size">Size</label>
-            <select id="ht-size" class="ht-variant__select">
-              <option value="XS">XS</option>
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-            </select>
+            <select id="ht-size" class="ht-variant__select" data-variant="size"></select>
           </div>
         </div>
 
@@ -162,7 +158,7 @@
   height: 140px;
   top: 36px;
   left: 17px;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -356,40 +352,208 @@
  js for opening and closing the pop-up modal on trigger click, and closing on ESC key.
 {% endcomment %}
 
-
 <script>
-  (function () {
-    const modal = document.getElementById('ht-modal');
-    if (!modal) return;
+(function () {
+  const modal = document.getElementById('ht-modal');
+  if (!modal) return;
 
-    function openModal() {
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.documentElement.style.overflow = 'hidden';
+  const imgEl   = modal.querySelector('.ht-modal__img');
+  const titleEl = modal.querySelector('.ht-modal__title');
+  const priceEl = modal.querySelector('.ht-modal__price');
+  const descEl  = modal.querySelector('.ht-modal__desc');
+
+  const colorWrap   = modal.querySelector('[data-variant="color"]');
+  const sizeSelect  = modal.querySelector('[data-variant="size"]');
+  const colorBlock  = modal.querySelector('[data-variant-block="color"]');
+  const sizeBlock   = modal.querySelector('[data-variant-block="size"]');
+
+  let activeProduct = null;
+  let selected = {}; // { "Color": "Black", "Size": "M" }
+
+  function money(cents) {
+    return `$${(cents / 100).toFixed(2)}`;
+  }
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+  }
+
+  function getOptionName(product, targets) {
+    // targets: ['color','colour'] etc
+    const opts = (product.options || []).map(o => String(o));
+    for (const t of targets) {
+      const lower = t.toLowerCase();
+      const exact = opts.find(o => o.toLowerCase() === lower);
+      if (exact) return exact;
+      const contains = opts.find(o => o.toLowerCase().includes(lower));
+      if (contains) return contains;
+    }
+    return null;
+  }
+
+  function unique(arr) {
+    return [...new Set(arr)];
+  }
+
+  function setActiveVariantUI(wrapper, activeValue) {
+    wrapper.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('is-active', b.dataset.value === activeValue);
+    });
+  }
+
+  function findMatchingVariant(product, selectedMap) {
+    // product.variants[].options aligns with product.options order
+    const optNames = product.options || [];
+    return product.variants.find(v => {
+      return optNames.every((name, idx) => {
+        if (!selectedMap[name]) return true; // not selected yet, allow
+        return v.options[idx] === selectedMap[name];
+      });
+    }) || null;
+  }
+
+  function updateDisplayedVariant(product) {
+    const v = findMatchingVariant(product, selected);
+    if (!v) return;
+
+    // price updates based on selected variant
+    priceEl.textContent = money(v.price);
+
+    // update image if variant has featured_image
+    if (v.featured_image && v.featured_image.src) {
+      imgEl.src = v.featured_image.src;
+      imgEl.alt = product.title || '';
+    }
+  }
+
+  function renderColors(product) {
+    if (!colorWrap || !colorBlock) return;
+
+    colorWrap.innerHTML = '';
+    const colorName = getOptionName(product, ['color', 'colour']);
+
+    if (!colorName) {
+      colorBlock.style.display = 'none';
+      return;
     }
 
-    function closeModal() {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.documentElement.style.overflow = '';
-    }
+    colorBlock.style.display = '';
+    const idx = product.options.indexOf(colorName);
+    const values = unique(product.variants.map(v => v.options[idx]));
 
-    // Open on circle click
-    document.addEventListener('click', (e) => {
-      const trigger = e.target.closest('.ht-card__trigger');
-      if (trigger) openModal();
+    // default
+    selected[colorName] = selected[colorName] || values[0];
 
-      if (e.target.closest('[data-ht-close]')) closeModal();
+    values.forEach(val => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ht-variant__btn';
+      btn.textContent = val;
+      btn.dataset.value = val;
+
+      btn.addEventListener('click', () => {
+        selected[colorName] = val;
+        setActiveVariantUI(colorWrap, val);
+        updateDisplayedVariant(product);
+      });
+
+      colorWrap.appendChild(btn);
     });
 
-    // ESC to close
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeModal();
+    setActiveVariantUI(colorWrap, selected[colorName]);
+  }
+
+  function renderSizes(product) {
+    if (!sizeSelect || !sizeBlock) return;
+
+    sizeSelect.innerHTML = '';
+    const sizeName = getOptionName(product, ['size']);
+
+    if (!sizeName) {
+      sizeBlock.style.display = 'none';
+      return;
+    }
+
+    sizeBlock.style.display = '';
+    const idx = product.options.indexOf(sizeName);
+    const values = unique(product.variants.map(v => v.options[idx]));
+
+    // default
+    selected[sizeName] = selected[sizeName] || values[0];
+
+    values.forEach(val => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      sizeSelect.appendChild(opt);
+    });
+
+    sizeSelect.value = selected[sizeName];
+
+    sizeSelect.onchange = () => {
+      selected[sizeName] = sizeSelect.value;
+      updateDisplayedVariant(product);
+    };
+  }
+
+  async function loadProduct(handle) {
+    const res = await fetch(`/products/${handle}.js`);
+    if (!res.ok) throw new Error(`Product fetch failed: ${res.status}`);
+    const product = await res.json();
+
+    activeProduct = product;
+    selected = {};
+
+    // base content
+    titleEl.textContent = product.title || '';
+    descEl.innerHTML = product.description || '';
+    priceEl.textContent = money(product.price);
+
+    // image
+    if (product.featured_image) {
+      imgEl.src = product.featured_image;
+      imgEl.alt = product.title || '';
+    }
+
+    // build variants from product data
+    renderColors(product);
+    renderSizes(product);
+
+    // align price/image to selected variant (if applicable)
+    updateDisplayedVariant(product);
+  }
+
+  document.addEventListener('click', async (e) => {
+    const trigger = e.target.closest('.ht-card__trigger');
+    if (trigger) {
+      e.preventDefault();
+      e.stopPropagation();
+      try {
+        await loadProduct(trigger.dataset.productHandle);
+        openModal();
+      } catch (err) {
+        console.error('[HT] popup load error:', err);
       }
-    });
-  })();
+      return;
+    }
+
+    if (e.target.closest('[data-ht-close]')) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+})();
 </script>
+
 
 {% comment %}
     // * End of Grid section *//
