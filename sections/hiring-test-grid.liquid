@@ -62,11 +62,11 @@
    <div class="ht-modal__content">
       <img 
         class="ht-modal__img" 
-        src="{{ product.featured_image | image_url: width: 240 }}" 
-        alt="{{ product.title | escape }}"
+        src="" 
+        alt=""
         width="120"
         height="140"
-        loading="lazy"/>
+        loading="lazy">
 
       <div class="ht-modal__info">
         <h3 class="ht-modal__title" id="ht-modal-title">Product name</h3>
@@ -82,11 +82,15 @@
             </div>
           </div>
 
-          <div class="ht-variant">
-            <span class="ht-variant__label">Size</span>
-            <div class="ht-variant__options">
-              <button type="button" class="ht-variant__btn is-active">Medium</button>
-              <button type="button" class="ht-variant__btn">Large</button>
+          <div class="ht-variant ht-variant--size">
+            <label class="ht-variant__label" for="ht-size">Size</label>
+            <select id="ht-size" class="ht-variant select">
+                <option value="XS">XS</option>
+                <option value="S">S</option>
+                <option value="M">M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+            </select>
             </div>
           </div>
         </div>
@@ -95,7 +99,6 @@
       </div>
     </div>
   </div>
-</div>
 
 {% comment %}
     // * End of Grid section *//
@@ -120,6 +123,7 @@
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
+  z-index: 0;
 }
 
 /* Popup card */
@@ -133,17 +137,20 @@
   background: #fff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   border: 0;
+  z-index: 1;
 }
 .ht-modal__close{
   position: absolute;
   width: 28px;
   height: 28px;
+  right:12px;
   top: 12px;
-  left: 278.8px;
   border: 1.5px solid #000;
   background: rgba(248,248,248,0.9);
   padding: 0;
   cursor: pointer;
+  z-index: 2;
+
 }
 
 /* Layout area */
@@ -242,6 +249,15 @@
   border-left: 0.5px solid #000;
 }
 
+.ht-variant__select{
+  width:271px;
+  height:40.44px;
+  border:0.5px solid #000;
+  background:transparent;
+  font-family:Jost, sans-serif;
+  font-size:18px;
+  padding: 0 12px;
+}
 
 /* Add to cart button */
 .ht-modal__cta{
