@@ -47,8 +47,7 @@
   </div>
 </section>
 
-
-<div class="ht-modal" id="ht-modal" aria-hidden="true">
+   <div class="ht-modal" id="ht-modal" aria-hidden="true">
   <div class="ht-modal__overlay" data-ht-close></div>
 
   <div class="ht-modal__panel" role="dialog" aria-modal="true" aria-labelledby="ht-modal-title">
@@ -56,17 +55,14 @@
       ✕
     </button>
 
-{%  comment %}
-  popup content revealed on trigger click.
-{% endcomment %}
-   <div class="ht-modal__content">
-      <img 
-        class="ht-modal__img" 
-        src="" 
+    <div class="ht-modal__content">
+      <img
+        class="ht-modal__img"
         alt=""
         width="120"
         height="140"
-        loading="lazy">
+        loading="lazy"
+      >
 
       <div class="ht-modal__info">
         <h3 class="ht-modal__title" id="ht-modal-title">Product name</h3>
@@ -84,14 +80,13 @@
 
           <div class="ht-variant ht-variant--size">
             <label class="ht-variant__label" for="ht-size">Size</label>
-            <select id="ht-size" class="ht-variant select">
-                <option value="XS">XS</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
+            <select id="ht-size" class="ht-variant__select">
+              <option value="XS">XS</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
             </select>
-            </div>
           </div>
         </div>
 
@@ -99,6 +94,7 @@
       </div>
     </div>
   </div>
+</div>
 
 {% comment %}
     // * End of Grid section *//
@@ -107,6 +103,7 @@
 
 <style>
 /* pop-up banner style/*/
+/* pop-up banner style */
 
 .ht-modal {
   position: fixed;
@@ -126,7 +123,6 @@
   z-index: 0;
 }
 
-/* Popup card */
 .ht-modal__panel{
   position: absolute;
   top: 50%;
@@ -139,28 +135,27 @@
   border: 0;
   z-index: 1;
 }
+
 .ht-modal__close{
   position: absolute;
   width: 28px;
   height: 28px;
-  right:12px;
+  right: 12px;
   top: 12px;
   border: 1.5px solid #000;
   background: rgba(248,248,248,0.9);
   padding: 0;
   cursor: pointer;
   z-index: 2;
-
 }
 
-/* Layout area */
 .ht-modal__content{
   position: relative;
   width: 100%;
   height: 100%;
   padding: 0;
 }
-/* image*/
+
 .ht-modal__img{
   position: absolute;
   width: 120px;
@@ -170,6 +165,7 @@
   object-fit: cover;
   display: block;
 }
+
 .ht-modal__title {
   position: absolute;
   top: 49px;
@@ -182,6 +178,7 @@
   margin: 0;
   color: #000;
 }
+
 .ht-modal__price {
   position: absolute;
   top: 88px;
@@ -194,6 +191,7 @@
   margin: 0;
   color: #000;
 }
+
 .ht-modal__desc{
   position: absolute;
   top: 119px;
@@ -208,7 +206,6 @@
   color: #000;
 }
 
-/* Color selector container */
 .ht-modal__variants{
   position: absolute;
   top: 186px;
@@ -223,6 +220,7 @@
   line-height: 130%;
   color: #333;
   margin: 0 0 8px;
+  display: block;
 }
 
 .ht-variant__options{
@@ -250,16 +248,15 @@
 }
 
 .ht-variant__select{
-  width:271px;
-  height:40.44px;
-  border:0.5px solid #000;
-  background:transparent;
-  font-family:Jost, sans-serif;
-  font-size:18px;
+  width: 271px;
+  height: 40.44px;
+  border: 0.5px solid #000;
+  background: transparent;
+  font-family: Jost, sans-serif;
+  font-size: 18px;
   padding: 0 12px;
 }
 
-/* Add to cart button */
 .ht-modal__cta{
   position: absolute;
   left: 20px;
@@ -343,7 +340,7 @@
     display: grid;
     place-items: center;
     padding: 0;
-    cursor: pointer;
+    cursor: pointer; 
 }
   /* Responsive: stack to 2 then 1 */
   @media (max-width: 1400px){
