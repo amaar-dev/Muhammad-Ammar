@@ -70,23 +70,23 @@
       <div class="ht-modal__info">
         <h3 class="ht-modal__title" id="ht-modal-title"></h3>
         <p class="ht-modal__price"></p>
-        <p class="ht-modal__desc"></p>
-
+        <div class="ht-modal__desc"></div>
+        <!-- Variant selectors get injected here -->
         <div class="ht-modal__variants">
-          <!-- Color gets injected here -->
-          <div class="ht-variant" data-variant-block="color" style="display:none;">
+          <div class="ht-variant" data-variant-block="color" hidden>
             <span class="ht-variant__label">Color</span>
             <div class="ht-variant__options" data-variant="color"></div>
           </div>
 
           <!-- Size gets injected here -->
-          <div class="ht-variant ht-variant--size" data-variant-block="size" style="display:none;">
+          <div class="ht-variant ht-variant--size" data-variant-block="size" hidden>
             <label class="ht-variant__label" for="ht-size">Size</label>
             <select id="ht-size" class="ht-variant__select" data-variant="size"></select>
           </div>
         </div>
 
-        <button class="ht-modal__cta" type="button">ADD TO CART</button>
+        <button class="ht-modal__cta" type="button" data-add-to-cart>ADD TO CART</button>
+        <p class="ht-modal__error" data-error aria-live="polite" hidden></p>
       </div>
     </div>
   </div>
