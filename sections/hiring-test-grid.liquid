@@ -60,9 +60,13 @@
   popup content revealed on trigger click.
 {% endcomment %}
    <div class="ht-modal__content">
-      <div class="ht-modal__media">
-        <div class="ht-modal__media-placeholder"></div>
-      </div>
+      <img 
+        class="ht-modal__img" 
+        src="{{ product.featured_image | image_url: width: 240 }}" 
+        alt="{{ product.title | escape }}"
+        width="120"
+        height="140"
+        loading="lazy"/>
 
       <div class="ht-modal__info">
         <h3 class="ht-modal__title" id="ht-modal-title">Product name</h3>
@@ -132,11 +136,10 @@
 }
 .ht-modal__close{
   position: absolute;
-  width: 12px;
-  height: 12px;
-  top: 12.7px;
+  width: 28px;
+  height: 28px;
+  top: 12px;
   left: 278.8px;
-  transform: rotate(45deg);
   border: 1.5px solid #000;
   background: rgba(248,248,248,0.9);
   padding: 0;
@@ -199,14 +202,14 @@
 }
 
 /* Color selector container */
-.ht-modal__options{
+.ht-modal__variants{
   position: absolute;
   top: 186px;
   left: 20px;
   width: 271px;
 }
 
-.ht-opt__label{
+.ht-variant__label{
   font-family: Jost, sans-serif;
   font-weight: 400;
   font-size: 14px;
@@ -215,7 +218,7 @@
   margin: 0 0 8px;
 }
 
-.ht-opt__split{
+.ht-variant__options{
   width: 271px;
   height: 40.44px;
   border: 0.5px solid #000;
@@ -223,7 +226,7 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.ht-opt__btn{
+.ht-variant__btn{
   background: transparent;
   border: 0;
   font-family: Jost, sans-serif;
@@ -235,7 +238,7 @@
   cursor: pointer;
 }
 
-.ht-opt__btn + .ht-opt__btn{
+.ht-variant__btn + .ht-variant__btn{
   border-left: 0.5px solid #000;
 }
 
