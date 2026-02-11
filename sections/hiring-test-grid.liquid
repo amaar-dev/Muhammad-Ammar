@@ -361,17 +361,18 @@
   const priceEl = modal.querySelector('.ht-modal__price');
   const descEl  = modal.querySelector('.ht-modal__desc');
 
-  const colorBlock = modal.querySelector('[data-variant-block="color"]');
-  const sizeBlock  = modal.querySelector('[data-variant-block="size"]');
+  const colorBlock = modal.querySelector('[data-variant-block="Color"]');
+  const sizeBlock  = modal.querySelector('[data-variant-block="Size"]');
 
-  const colorWrap  = modal.querySelector('[data-variant="color"]');
-  const sizeSelect = modal.querySelector('[data-variant="size"]');
+  const colorWrap  = modal.querySelector('[data-variant="Color"]');
+  const sizeSelect = modal.querySelector('[data-variant="Size"]');
 
   const addBtn   = modal.querySelector('[data-add-to-cart]');
   const errorEl  = modal.querySelector('[data-error]');
 
   let activeProduct = null;
   let selected = {}; // optionName -> value
+  let activeVariantID = null;
 
   function money(cents) {
     return (cents / 100).toLocaleString(undefined, { style: 'currency', currency: Shopify.currency.active || 'USD' });
@@ -434,16 +435,29 @@
     colorWrap.innerHTML = '';
     colorBlock.hidden = true;
 
-    const colorName = getOptionName(product, ['color', 'colour']);
+    const colorName = getOptionName( product,['colour'] || getOptionName(product, 'color'));
     if (!colorName) return;
 
     const idx = product.options.indexOf(colorName);
-    if (idx < 0) return;
-
-    const values = getUniqueValuesForOption(product, idx);
+    const values = [...new Set(
+      product.variants.map(v => v.options[idx]).filter(Boolean)
+    )];
     if (!values.length) return;
 
     colorBlock.hidden = false;
+    values.forEach((val, i) => {
+    const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ht-variant__btn' + (i === 0 ? ' is-active' : '');
+      btn.textContent = val;
+      btn.addEventListener('click', () => {
+        [...colorWrap.querySelectorAll('.ht-variant__btn')].forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+      });
+        colorWrap.appendChild(btn);
+    });
+      
+    }
 
     // default
     selected[colorName] = selected[colorName] || values[0];
@@ -470,44 +484,28 @@
   }
 
   function renderSizes(product) {
-    if (!sizeSelect || !sizeBlock) return;
+  if (!sizeSelect || !sizeBlock) return;
 
-    sizeSelect.innerHTML = '';
-    sizeBlock.hidden = true;
+  sizeSelect.innerHTML = '';
+  sizeBlock.hidden = true;
 
-    const sizeName = getOptionName(product, ['size']);
-    if (!sizeName) return;
+  const sizeName = getOptionName(product, 'size');
+  if (!sizeName) return;
 
-    const idx = product.options.indexOf(sizeName);
-    if (idx < 0) return;
+  const idx = product.options.indexOf(sizeName);
+  const values = [...new Set(product.variants.map(v => v.options[idx]).filter(Boolean))];
+  if (!values.length) return;
 
-    // If product has color, filter sizes to only those available for selected color
-    const colorName = getOptionName(product, ['color', 'colour']);
-    const colorIdx = colorName ? product.options.indexOf(colorName) : -1;
-    const colorVal = (colorName && selected[colorName]) ? selected[colorName] : null;
+  sizeBlock.hidden = false;
 
-    let variants = product.variants || [];
-    if (colorIdx >= 0 && colorVal) {
-      variants = variants.filter(v => v.options && v.options[colorIdx] === colorVal);
-    }
-
-    const values = [...new Set(
-      variants.map(v => (v.options && v.options[idx]) ? v.options[idx] : null).filter(Boolean)
-    )];
-
-    if (!values.length) return;
-
-    sizeBlock.hidden = false;
-
-    // default
-    selected[sizeName] = selected[sizeName] || values[0];
-
-    values.forEach((val) => {
-      const opt = document.createElement('option');
-      opt.value = val;
-      opt.textContent = val;
-      sizeSelect.appendChild(opt);
-    });
+  values.forEach((val, i) => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = val;
+    if (i === 0) opt.selected = true;
+    sizeSelect.appendChild(opt);
+  });
+}
 
     sizeSelect.value = selected[sizeName];
     sizeSelect.onchange = () => {
@@ -536,6 +534,8 @@
     const res = await fetch(`/products/${handle}.js`);
     if (!res.ok) throw new Error(`Product fetch failed (${res.status})`);
     const product = await res.json();
+    activeProduct = product;
+    activeVariantID = product.variants?.[0]?.id || null;
 
     activeProduct = product;
     selected = {}; // reset selection for new product
@@ -620,7 +620,27 @@
       addToCart();
     }
   });
+    if (addBtn) {
+      addBtn.addEventListener('click', async () => {
+        if (!activeVariantID) return;
+        
+        try {
+          const res = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: activeVariantID, quantity: 1 })
 
+            if (!res.ok) throw new Error('Failed to add to cart');
+
+               closeModal();
+            } catch (e) {
+            if (errEl) {
+                errEl.hidden = false;
+                errEl.textContent = 'Could not add to cart. Please try again.';
+      }
+    }
+  });
+}
   // ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
