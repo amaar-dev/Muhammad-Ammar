@@ -410,91 +410,56 @@
   }
 
   function renderColors(product) {
-    if (!colorBlock || !colorWrap) return;
-
     colorWrap.innerHTML = '';
     colorBlock.hidden = true;
 
-    const colorOpt = getOptionMeta(product, ['color', 'colour']);
-  if (!colorOpt) return;
+    const colorOption = product.options.find(o => o.name === 'Color');
+    if (!colorOption) return;
 
-  // find color index by position (position is 1-based) [idx]
-  const colorIndex = (colorOpt.position || 2) - 1;
+    colorBlock.hidden = false;
 
-  // get unique color values from variants for specific product
-  const values = [...new Set((product.variants || [])
-    .map(v => (v.options && v.options[colorIndex]) ? v.options[colorIndex] : null)
-    .filter(Boolean)
-  )];
+    colorOption.values.forEach((val, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ht-variant__btn' + (i === 0 ? ' is-active' : '');
+        btn.textContent = val;
+        btn.dataset.value = val;
 
-  if (!values.length) return;
+        btn.addEventListener('click', () => {
+            selected['Color'] = val;
+            [...colorWrap.querySelectorAll('.ht-variant__btn')]
+                .forEach(b => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+        });
 
-  colorBlock.hidden = false;
+        colorWrap.appendChild(btn);
 
-  if (!selected[colorOpt.name]) selected[colorOpt.name] = values[0];
-
-    colorOpt.values.forEach((val) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ht-variant__btn' + (selected[colorOpt.name] === val ? ' is-active' : '');
-      btn.textContent = val;
-      btn.dataset.value = val;
-
-      btn.addEventListener('click', () => {
-        selected[colorOpt.name] = val;
-        [...colorWrap.querySelectorAll('.ht-variant__btn')].forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-
-        renderSizes(activeProduct); // re-render sizes as well since some variants might not be available for this color
-      });
-
-      colorWrap.appendChild(btn);
+        if (i === 0) selected['Color'] = val;
     });
-  }
+    }
 
   function renderSizes(product) {
-    if (!sizeBlock || !sizeSelect) return;
-
     sizeSelect.innerHTML = '';
     sizeBlock.hidden = true;
 
-    const sizeOpt = getOptionMeta(product, ['size']);
-    if (!sizeOpt) return;
+    const sizeOption = product.options.find(o => o.name === 'Size');
+    if (!sizeOption) return;
 
-    const colorOpt = getOptionMeta(product, ['color', 'colour']);
+    sizeBlock.hidden = false;
 
-  const sizeIndex  = (sizeOpt.position || 1) - 1;
-  const colorIndex = colorOpt ? ((colorOpt.position || 2) - 1) : null;
+    sizeOption.values.forEach((val, i) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        if (i === 0) opt.selected = true;
 
-  // filter variants by selected color (if color exists)
-  const filteredVariants = (product.variants || []).filter(v => {
-    if (colorIndex === null) return true;
-    const pickedColor = selected[colorOpt.name];
-    if (!pickedColor) return true;
-    return v.options && v.options[colorIndex] === pickedColor;
+        sizeSelect.appendChild(opt);
+
+        if (i === 0) selected['Size'] = val;
   });
 
-  const values = [...new Set(filteredVariants
-    .map(v => (v.options && v.options[sizeIndex]) ? v.options[sizeIndex] : null)
-    .filter(Boolean)
-  )];
-
-  if (!values.length) return;
-
-  sizeBlock.hidden = false;
-
-  if (!selected[sizeOpt.name]) selected[sizeOpt.name] = values[0];
-
-  values.forEach(val => {
-    const opt = document.createElement('option');
-    opt.value = val;
-    opt.textContent = val;
-    sizeSelect.appendChild(opt);
-  });
-
-  sizeSelect.value = selected[sizeOpt.name];
-  sizeSelect.onchange = () => {
-    selected[sizeOpt.name] = sizeSelect.value;
+    sizeSelect.onchange = () => {
+        selected['Size'] = sizeSelect.value;
   };
 }
 
