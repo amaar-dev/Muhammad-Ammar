@@ -570,6 +570,7 @@
   document.addEventListener('click', async (e) => {
     const trigger = e.target.closest('.ht-card__trigger');
     if (trigger) {
+      console.log('HANDLE CLICKED: ', trigger.dataset.productHandle)   //HANDLE LOG for debugging// remove if not needed
       e.preventDefault();
       e.stopPropagation();
       try {
