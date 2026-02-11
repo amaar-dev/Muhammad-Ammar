@@ -418,17 +418,11 @@
   }
 
   function getOptionName(product, targets) {
-    // targets: ["color","colour"] or ["size"]
-    const opts = (product.options || []).map(o => String(o));
-    for (const t of targets) {
-      const tl = t.toLowerCase();
-      const exact = opts.find(o => o.toLowerCase() === tl);
-      if (exact) return exact;
-      const inc = opts.find(o => o.toLowerCase().includes(tl));
-      if (inc) return inc;
-    }
-    return null;
-  }
+    const tset = targets.map(t => t.toLowerCase());
+    const opts = = product.options || [];  // returns array of option names, e.g. ["Color", "Size"]
+
+    return opts.find(o => o && o.name && test.includes(o.name.toLowerCase())) || null;
+
 
   function setActiveButton(container, value) {
     if (!container) return;
@@ -444,42 +438,32 @@
     colorBlock.hidden = true;
 
     const colorName = getOptionName(product, ['color', 'colour']);
-    if (!colorName) return;
-
-    const idx = product.options.indexOf(colorName);
-    if (idx < 0) return;
-
-    const values = [...new Set((product.variants || [])
-      .map(v => v.options && v.options[idx])
-      .filter(Boolean)
-    )];
-
-    if (!values.length) return;
+    if (!colorOpt || !colorOpt.values || !colorOpt.values.length) return;
 
     colorBlock.hidden = false;
 
-    // default
-    selected[colorName] = selected[colorName] || values[0];
+    selected.Color = selected.Color || colorOpt.values[0];
 
-    values.forEach(val => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ht-variant__btn';
-      btn.textContent = val;
-      btn.dataset.value = val;
+    colorOpt.values.forEach((val) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ht-variant__btn';
+        btn.textContent = val;
+        btn.dataset.value = val;
 
-      btn.addEventListener('click', () => {
-        selected[colorName] = val;
-        setActiveButton(colorWrap, val);
-        // If size availability depends on color later, we can filter; for now just re-render
-        renderSizes(product);
-      });
+        btn.addEventListener('click', () => {
+        selected.Color = val;
+        [...colorWrap.querySelectorAll('.ht-variant__btn')].forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        });
 
-      colorWrap.appendChild(btn);
+        colorWrap.appendChild(btn);
     });
 
-    setActiveButton(colorWrap, selected[colorName]);
-  }
+    
+    const activeBtn = colorWrap.querySelector(`[data-value="${CSS.escape(selected.Color)}"]`);
+    if (activeBtn) activeBtn.classList.add('is-active');
+    }
 
   function renderSizes(product) {
     if (!sizeBlock || !sizeSelect) return;
@@ -487,36 +471,26 @@
     sizeSelect.innerHTML = '';
     sizeBlock.hidden = true;
 
-    const sizeName = getOptionName(product, ['size']);
-    if (!sizeName) return;
-
-    const idx = product.options.indexOf(sizeName);
-    if (idx < 0) return;
-
-    const values = [...new Set((product.variants || [])
-      .map(v => v.options && v.options[idx])
-      .filter(Boolean)
-    )];
-
-    if (!values.length) return;
+    const sizeOpt = getOptionMeta(product, ['size']);
+    if (!sizeOpt || !sizeOpt.values || !sizeOpt.values.length) return;
 
     sizeBlock.hidden = false;
 
-    // default
-    selected[sizeName] = selected[sizeName] || values[0];
+    selected.Size = selected.Size || sizeOpt.values[0];
 
-    values.forEach(val => {
-      const opt = document.createElement('option');
-      opt.value = val;
-      opt.textContent = val;
-      sizeSelect.appendChild(opt);
+    sizeOpt.values.forEach((val) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        sizeSelect.appendChild(opt);
     });
 
-    sizeSelect.value = selected[sizeName];
+    sizeSelect.value = selected.Size;
+
     sizeSelect.onchange = () => {
-      selected[sizeName] = sizeSelect.value;
+        selected.Size = sizeSelect.value;
     };
-  }
+    }
 
   function findMatchingVariant(product) {
     const optionNames = product.options || [];
