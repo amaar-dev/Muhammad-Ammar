@@ -361,21 +361,22 @@
   const priceEl = modal.querySelector('.ht-modal__price');
   const descEl  = modal.querySelector('.ht-modal__desc');
 
-  const colorBlock = modal.querySelector('[data-variant-block="Color"]');
-  const sizeBlock  = modal.querySelector('[data-variant-block="Size"]');
+  // MUST MATCH HTML (lowercase)
+  const colorBlock = modal.querySelector('[data-variant-block="color"]');
+  const sizeBlock  = modal.querySelector('[data-variant-block="size"]');
 
-  const colorWrap  = modal.querySelector('[data-variant="Color"]');
-  const sizeSelect = modal.querySelector('[data-variant="Size"]');
+  const colorWrap  = modal.querySelector('[data-variant="color"]');
+  const sizeSelect = modal.querySelector('[data-variant="size"]');
 
-  const addBtn   = modal.querySelector('[data-add-to-cart]');
-  const errorEl  = modal.querySelector('[data-error]');
+  const addBtn  = modal.querySelector('[data-add-to-cart]');
+  const errorEl = modal.querySelector('[data-error]');
 
   let activeProduct = null;
   let selected = {}; // optionName -> value
-  let activeVariantID = null;
 
   function money(cents) {
-    return (cents / 100).toLocaleString(undefined, { style: 'currency', currency: Shopify.currency.active || 'USD' });
+    const cur = (window.Shopify && Shopify.currency && Shopify.currency.active) ? Shopify.currency.active : 'USD';
+    return (cents / 100).toLocaleString(undefined, { style: 'currency', currency: cur });
   }
 
   function openModal() {
@@ -404,7 +405,6 @@
   }
 
   function getOptionName(product, targets) {
-    // targets = ['color','colour'] etc
     const opts = (product.options || []).map(o => String(o));
     for (const t of targets) {
       const tl = t.toLowerCase();
@@ -416,15 +416,9 @@
     return null;
   }
 
-  function getUniqueValuesForOption(product, optionIndex) {
-    const values = product.variants
-      .map(v => (v.options && v.options[optionIndex]) ? v.options[optionIndex] : null)
-      .filter(Boolean);
-    return [...new Set(values)];
-  }
-
   function setActiveButton(container, value) {
-    [...container.querySelectorAll('.ht-variant__btn')].forEach(b => {
+    if (!container) return;
+    container.querySelectorAll('.ht-variant__btn').forEach(b => {
       b.classList.toggle('is-active', b.dataset.value === value);
     });
   }
@@ -435,32 +429,17 @@
     colorWrap.innerHTML = '';
     colorBlock.hidden = true;
 
-    const colorName = getOptionName( product,['colour'] || getOptionName(product, 'color'));
+    const colorName = getOptionName(product, ['color', 'colour']);
     if (!colorName) return;
 
     const idx = product.options.indexOf(colorName);
-    const values = [...new Set(
-      product.variants.map(v => v.options[idx]).filter(Boolean)
-    )];
+    const values = [...new Set((product.variants || []).map(v => v.options?.[idx]).filter(Boolean))];
     if (!values.length) return;
 
     colorBlock.hidden = false;
-    values.forEach((val, i) => {
-    const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'ht-variant__btn' + (i === 0 ? ' is-active' : '');
-      btn.textContent = val;
-      btn.addEventListener('click', () => {
-        [...colorWrap.querySelectorAll('.ht-variant__btn')].forEach(b => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-      });
-        colorWrap.appendChild(btn);
-    });
-      
-    }
 
-    // default
-    selected[colorName] = selected[colorName] || values[0];
+    // default selection
+    if (!selected[colorName]) selected[colorName] = values[0];
 
     values.forEach((val) => {
       const btn = document.createElement('button');
@@ -472,9 +451,7 @@
       btn.addEventListener('click', () => {
         selected[colorName] = val;
         setActiveButton(colorWrap, val);
-
-        // If size depends on color (common), re-render sizes based on availability
-        renderSizes(product);
+        renderSizes(product); // if size availability depends on color
       });
 
       colorWrap.appendChild(btn);
@@ -484,28 +461,40 @@
   }
 
   function renderSizes(product) {
-  if (!sizeSelect || !sizeBlock) return;
+    if (!sizeSelect || !sizeBlock) return;
 
-  sizeSelect.innerHTML = '';
-  sizeBlock.hidden = true;
+    sizeSelect.innerHTML = '';
+    sizeBlock.hidden = true;
 
-  const sizeName = getOptionName(product, 'size');
-  if (!sizeName) return;
+    const sizeName = getOptionName(product, ['size']);
+    if (!sizeName) return;
 
-  const idx = product.options.indexOf(sizeName);
-  const values = [...new Set(product.variants.map(v => v.options[idx]).filter(Boolean))];
-  if (!values.length) return;
+    const idx = product.options.indexOf(sizeName);
 
-  sizeBlock.hidden = false;
+    // Optional: filter sizes to those available under selected color
+    const optionNames = product.options || [];
+    const colorName = getOptionName(product, ['color', 'colour']);
+    const colorIdx = colorName ? optionNames.indexOf(colorName) : -1;
+    const chosenColor = colorName ? selected[colorName] : null;
 
-  values.forEach((val, i) => {
-    const opt = document.createElement('option');
-    opt.value = val;
-    opt.textContent = val;
-    if (i === 0) opt.selected = true;
-    sizeSelect.appendChild(opt);
-  });
-}
+    let variants = product.variants || [];
+    if (chosenColor && colorIdx >= 0) {
+      variants = variants.filter(v => v.options?.[colorIdx] === chosenColor);
+    }
+
+    const values = [...new Set(variants.map(v => v.options?.[idx]).filter(Boolean))];
+    if (!values.length) return;
+
+    sizeBlock.hidden = false;
+
+    if (!selected[sizeName]) selected[sizeName] = values[0];
+
+    values.forEach((val) => {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      sizeSelect.appendChild(opt);
+    });
 
     sizeSelect.value = selected[sizeName];
     sizeSelect.onchange = () => {
@@ -514,10 +503,7 @@
   }
 
   function findMatchingVariant(product) {
-    // Build option map: optionName -> selectedValue
-    // Then find variant whose options match those values.
     const optionNames = product.options || [];
-
     return (product.variants || []).find(v => {
       if (!v.options) return false;
       for (let i = 0; i < optionNames.length; i++) {
@@ -531,14 +517,13 @@
 
   async function loadProduct(handle) {
     hideError();
+
     const res = await fetch(`/products/${handle}.js`);
     if (!res.ok) throw new Error(`Product fetch failed (${res.status})`);
     const product = await res.json();
-    activeProduct = product;
-    activeVariantID = product.variants?.[0]?.id || null;
 
     activeProduct = product;
-    selected = {}; // reset selection for new product
+    selected = {}; // reset for new product
 
     // image
     if (product.featured_image) {
@@ -555,7 +540,6 @@
     descEl.innerHTML = product.description || '';
     priceEl.textContent = money(product.price || 0);
 
-    // Render variants from product
     renderColors(product);
     renderSizes(product);
   }
@@ -570,7 +554,7 @@
       return;
     }
 
-    addBtn.disabled = true;
+    if (addBtn) addBtn.disabled = true;
 
     try {
       const res = await fetch('/cart/add.js', {
@@ -580,28 +564,23 @@
       });
 
       if (!res.ok) throw new Error(`Add to cart failed (${res.status})`);
-
-      // Optional: close modal after add
       closeModal();
-      // Optional: refresh cart drawer/section if theme uses it (skip for now)
-
     } catch (err) {
-      showError('Could not add to cart. Please try again.');
       console.error(err);
+      showError('Could not add to cart. Please try again.');
     } finally {
-      addBtn.disabled = false;
+      if (addBtn) addBtn.disabled = false;
     }
   }
 
-  // Click handling
   document.addEventListener('click', async (e) => {
     const trigger = e.target.closest('.ht-card__trigger');
     if (trigger) {
       e.preventDefault();
       e.stopPropagation();
-      const handle = trigger.dataset.productHandle;
+
       try {
-        await loadProduct(handle);
+        await loadProduct(trigger.dataset.productHandle);
         openModal();
       } catch (err) {
         console.error(err);
@@ -621,7 +600,6 @@
     }
   });
 
-  // ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
   });
