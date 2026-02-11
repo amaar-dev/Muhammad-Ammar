@@ -361,10 +361,9 @@
   const priceEl = modal.querySelector('.ht-modal__price');
   const descEl  = modal.querySelector('.ht-modal__desc');
 
-  // MUST MATCH HTML (lowercase)
+  // IMPORTANT: lowercase to match your HTML
   const colorBlock = modal.querySelector('[data-variant-block="color"]');
   const sizeBlock  = modal.querySelector('[data-variant-block="size"]');
-
   const colorWrap  = modal.querySelector('[data-variant="color"]');
   const sizeSelect = modal.querySelector('[data-variant="size"]');
 
@@ -372,59 +371,74 @@
   const errorEl = modal.querySelector('[data-error]');
 
   let activeProduct = null;
-  let selected = {}; // optionName -> value
-
-  function money(cents) {
-    const cur = (window.Shopify && Shopify.currency && Shopify.currency.active) ? Shopify.currency.active : 'USD';
-    return (cents / 100).toLocaleString(undefined, { style: 'currency', currency: cur });
-  }
-
-  function openModal() {
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    document.documentElement.style.overflow = 'hidden';
-  }
-
-  function closeModal() {
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
-    document.documentElement.style.overflow = '';
-    hideError();
-  }
+  let selected = {};           // optionName -> value
+  let lastTrigger = null;      // to restore focus when closing
 
   function showError(msg) {
     if (!errorEl) return;
     errorEl.textContent = msg;
     errorEl.hidden = false;
   }
-
   function hideError() {
     if (!errorEl) return;
     errorEl.textContent = '';
     errorEl.hidden = true;
   }
 
+  function money(cents) {
+    try {
+      return (cents / 100).toLocaleString(undefined, {
+        style: 'currency',
+        currency: (window.Shopify && Shopify.currency && Shopify.currency.active) ? Shopify.currency.active : 'USD'
+      });
+    } catch {
+      return `$${(cents / 100).toFixed(2)}`;
+    }
+  }
+
+  function openModal(triggerEl) {
+    lastTrigger = triggerEl || lastTrigger;
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+
+    // focus close button for accessibility
+    const closeBtn = modal.querySelector('[data-ht-close]');
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeModal() {
+    // restore focus BEFORE hiding to avoid the aria-hidden warning
+    if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus();
+
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.overflow = '';
+    hideError();
+  }
+
   function getOptionName(product, targets) {
+    // targets: ["color","colour"] or ["size"]
     const opts = (product.options || []).map(o => String(o));
     for (const t of targets) {
       const tl = t.toLowerCase();
       const exact = opts.find(o => o.toLowerCase() === tl);
       if (exact) return exact;
-      const includes = opts.find(o => o.toLowerCase().includes(tl));
-      if (includes) return includes;
+      const inc = opts.find(o => o.toLowerCase().includes(tl));
+      if (inc) return inc;
     }
     return null;
   }
 
   function setActiveButton(container, value) {
     if (!container) return;
-    container.querySelectorAll('.ht-variant__btn').forEach(b => {
-      b.classList.toggle('is-active', b.dataset.value === value);
+    container.querySelectorAll('.ht-variant__btn').forEach(btn => {
+      btn.classList.toggle('is-active', btn.dataset.value === value);
     });
   }
 
   function renderColors(product) {
-    if (!colorWrap || !colorBlock) return;
+    if (!colorBlock || !colorWrap) return;
 
     colorWrap.innerHTML = '';
     colorBlock.hidden = true;
@@ -433,15 +447,21 @@
     if (!colorName) return;
 
     const idx = product.options.indexOf(colorName);
-    const values = [...new Set((product.variants || []).map(v => v.options?.[idx]).filter(Boolean))];
+    if (idx < 0) return;
+
+    const values = [...new Set((product.variants || [])
+      .map(v => v.options && v.options[idx])
+      .filter(Boolean)
+    )];
+
     if (!values.length) return;
 
     colorBlock.hidden = false;
 
-    // default selection
-    if (!selected[colorName]) selected[colorName] = values[0];
+    // default
+    selected[colorName] = selected[colorName] || values[0];
 
-    values.forEach((val) => {
+    values.forEach(val => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'ht-variant__btn';
@@ -451,7 +471,8 @@
       btn.addEventListener('click', () => {
         selected[colorName] = val;
         setActiveButton(colorWrap, val);
-        renderSizes(product); // if size availability depends on color
+        // If size availability depends on color later, we can filter; for now just re-render
+        renderSizes(product);
       });
 
       colorWrap.appendChild(btn);
@@ -461,7 +482,7 @@
   }
 
   function renderSizes(product) {
-    if (!sizeSelect || !sizeBlock) return;
+    if (!sizeBlock || !sizeSelect) return;
 
     sizeSelect.innerHTML = '';
     sizeBlock.hidden = true;
@@ -470,26 +491,21 @@
     if (!sizeName) return;
 
     const idx = product.options.indexOf(sizeName);
+    if (idx < 0) return;
 
-    // Optional: filter sizes to those available under selected color
-    const optionNames = product.options || [];
-    const colorName = getOptionName(product, ['color', 'colour']);
-    const colorIdx = colorName ? optionNames.indexOf(colorName) : -1;
-    const chosenColor = colorName ? selected[colorName] : null;
+    const values = [...new Set((product.variants || [])
+      .map(v => v.options && v.options[idx])
+      .filter(Boolean)
+    )];
 
-    let variants = product.variants || [];
-    if (chosenColor && colorIdx >= 0) {
-      variants = variants.filter(v => v.options?.[colorIdx] === chosenColor);
-    }
-
-    const values = [...new Set(variants.map(v => v.options?.[idx]).filter(Boolean))];
     if (!values.length) return;
 
     sizeBlock.hidden = false;
 
-    if (!selected[sizeName]) selected[sizeName] = values[0];
+    // default
+    selected[sizeName] = selected[sizeName] || values[0];
 
-    values.forEach((val) => {
+    values.forEach(val => {
       const opt = document.createElement('option');
       opt.value = val;
       opt.textContent = val;
@@ -507,8 +523,8 @@
     return (product.variants || []).find(v => {
       if (!v.options) return false;
       for (let i = 0; i < optionNames.length; i++) {
-        const name = optionNames[i];
-        const chosen = selected[name];
+        const optName = optionNames[i];
+        const chosen = selected[optName];
         if (chosen && v.options[i] !== chosen) return false;
       }
       return true;
@@ -523,7 +539,7 @@
     const product = await res.json();
 
     activeProduct = product;
-    selected = {}; // reset for new product
+    selected = {};
 
     // image
     if (product.featured_image) {
@@ -562,7 +578,6 @@
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ id: variant.id, quantity: 1 })
       });
-
       if (!res.ok) throw new Error(`Add to cart failed (${res.status})`);
       closeModal();
     } catch (err) {
@@ -579,9 +594,10 @@
       e.preventDefault();
       e.stopPropagation();
 
+      const handle = trigger.dataset.productHandle;
       try {
-        await loadProduct(trigger.dataset.productHandle);
-        openModal();
+        await loadProduct(handle);
+        openModal(trigger);
       } catch (err) {
         console.error(err);
         showError('Could not load product.');
@@ -597,6 +613,7 @@
     if (e.target.closest('[data-add-to-cart]')) {
       e.preventDefault();
       addToCart();
+      return;
     }
   });
 
