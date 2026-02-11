@@ -416,12 +416,22 @@
     colorBlock.hidden = true;
 
     const colorOpt = getOptionMeta(product, ['color', 'colour']);
-    if (!colorOpt || !Array.isArray(colorOpt.values) || !colorOpt.values.length) return;
+  if (!colorOpt) return;
 
-    colorBlock.hidden = false;
+  // find color index by position (position is 1-based) [idx]
+  const colorIndex = (colorOpt.position || 2) - 1;
 
-    // default
-    if (!selected[colorOpt.name]) selected[colorOpt.name] = colorOpt.values[0];
+  // get unique color values from variants for specific product
+  const values = [...new Set((product.variants || [])
+    .map(v => (v.options && v.options[colorIndex]) ? v.options[colorIndex] : null)
+    .filter(Boolean)
+  )];
+
+  if (!values.length) return;
+
+  colorBlock.hidden = false;
+
+  if (!selected[colorOpt.name]) selected[colorOpt.name] = values[0];
 
     colorOpt.values.forEach((val) => {
       const btn = document.createElement('button');
@@ -434,6 +444,8 @@
         selected[colorOpt.name] = val;
         [...colorWrap.querySelectorAll('.ht-variant__btn')].forEach(b => b.classList.remove('is-active'));
         btn.classList.add('is-active');
+
+        renderSizes(activeProduct); // re-render sizes as well since some variants might not be available for this color
       });
 
       colorWrap.appendChild(btn);
@@ -447,25 +459,44 @@
     sizeBlock.hidden = true;
 
     const sizeOpt = getOptionMeta(product, ['size']);
-    if (!sizeOpt || !Array.isArray(sizeOpt.values) || !sizeOpt.values.length) return;
+    if (!sizeOpt) return;
 
-    sizeBlock.hidden = false;
+    const colorOpt = getOptionMeta(product, ['color', 'colour']);
 
-    // default
-    if (!selected[sizeOpt.name]) selected[sizeOpt.name] = sizeOpt.values[0];
+  const sizeIndex  = (sizeOpt.position || 1) - 1;
+  const colorIndex = colorOpt ? ((colorOpt.position || 2) - 1) : null;
 
-    sizeOpt.values.forEach((val) => {
-      const opt = document.createElement('option');
-      opt.value = val;
-      opt.textContent = val;
-      sizeSelect.appendChild(opt);
-    });
+  // filter variants by selected color (if color exists)
+  const filteredVariants = (product.variants || []).filter(v => {
+    if (colorIndex === null) return true;
+    const pickedColor = selected[colorOpt.name];
+    if (!pickedColor) return true;
+    return v.options && v.options[colorIndex] === pickedColor;
+  });
 
-    sizeSelect.value = selected[sizeOpt.name];
-    sizeSelect.onchange = () => {
-      selected[sizeOpt.name] = sizeSelect.value;
-    };
-  }
+  const values = [...new Set(filteredVariants
+    .map(v => (v.options && v.options[sizeIndex]) ? v.options[sizeIndex] : null)
+    .filter(Boolean)
+  )];
+
+  if (!values.length) return;
+
+  sizeBlock.hidden = false;
+
+  if (!selected[sizeOpt.name]) selected[sizeOpt.name] = values[0];
+
+  values.forEach(val => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = val;
+    sizeSelect.appendChild(opt);
+  });
+
+  sizeSelect.value = selected[sizeOpt.name];
+  sizeSelect.onchange = () => {
+    selected[sizeOpt.name] = sizeSelect.value;
+  };
+}
 
   function findMatchingVariant(product) {
     // Shopify .js gives variants with option1/option2 AND options:[...]
