@@ -282,6 +282,56 @@ color: #000000;
     border-color: #f1d400;
 }
 
+/* mobile css*/
+@media (max-width: 480px) { 
+    .ht-banner {
+        min-height: auto;
+        background-position: center;
+    }
+        .ht-banner__inner {
+            padding: 10px 16px 0;
+    }
+        .ht-banner__topbar {
+            grid-template-columns: auto 1fr auto;
+            gap:10px;
+    }
+        .ht-banner__brand {
+            justify-self: center;
+    }
+        .ht-banner__tagline {
+            display: none;
+    }
+        .ht-banner__content {
+            margin-top: 24px;
+            max-width: 100%;
+            padding: 0 16px;
+            text-align: center;
+    }
+        .ht-banner__title {
+            font-size: 32px;
+            line-height: 1.15;
+    }
+        .ht-banner__desc {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 10px auto 18px;
+    }
+        .ht-btn {
+            height: 44px;
+            padding: 12px 18px;
+    }
+        .ht-btn--black {
+            margin: 0 auto;
+            display: inline-flex;
+    }
+        .ht-banner__strip {
+            margin-top: 24px;
+            font-size: 11px;
+            padding: 10px 12px;
+    }
+}
+
+
 
 </style>
 

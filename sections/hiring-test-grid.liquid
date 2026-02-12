@@ -278,13 +278,6 @@
   cursor: pointer;
 }
 
-/* Mobile */
-@media (max-width: 820px) {
-  .ht-modal__content {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Grid section styles */
     .ht-grid {
   /* Outer section size + spacing */
@@ -347,6 +340,13 @@
     padding: 0;
     cursor: pointer; 
 }
+/* Mobile */
+@media (max-width: 820px) {
+  .ht-modal__content {
+    grid-template-columns: 1fr;
+  }
+}
+
   /* Responsive: stack to 2 then 1 */
   @media (max-width: 1400px){
     .ht-grid__grid{ grid-template-columns: repeat(2, 433px); }
