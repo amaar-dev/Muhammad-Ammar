@@ -65,6 +65,7 @@
         width="120"
         height="140"
         loading="lazy"
+        style="object-fit: cover; object-position: center"
       >
 
       <div class="ht-modal__info">
@@ -156,18 +157,14 @@
 
 .ht-modal__img{
   position: absolute;
-  width: 120px;
-  height: 140px;
-  top: 36px;
+  top: 36px;            /*image setting in html to avoid rendering issues*/
   left: 17px;
-  object-fit: contain;
   display: block;
-  object-fit: contain;
 }
 
 .ht-modal__title {
   position: absolute;
-  top: 119px;
+  top: 49px;
   left: 145px;
   width: 146px;
   height: 60px;
@@ -213,8 +210,9 @@
 
 .ht-modal__variants{
   position: absolute;
-  top: 186px;
+  bottom: 200px;
   left: 20px;
+  height: 65px;
   width: 271px;
 }
 
@@ -254,12 +252,13 @@
 
 .ht-variant__select{
   width: 271px;
-  height: 40.44px;
+  height: 64px;
   border: 0.5px solid #000;
   background: transparent;
   font-family: Jost, sans-serif;
   font-size: 18px;
   padding: 0 12px;
+  bottom: 120px;
 }
 
 .ht-modal__cta{
