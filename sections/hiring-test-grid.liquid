@@ -537,7 +537,7 @@
     const tset = targets.map(t => t.toLowerCase());
     return opts.find(o => o && o.name && tset.includes(o.name.toLowerCase())) || null;
   }
-
+ //color fetch below
   function renderColors(product) {
     colorWrap.innerHTML = '';
     colorBlock.hidden = true;
@@ -555,7 +555,7 @@
         btn.dataset.value = val;
         btn.dataset.value = val;
 
-        //Safe color parsing
+        //Safe color parsing (A fall-back color specified)
         const safeColor = val && CSS.supports('color', val.toLowerCase())
         ? val.toLowerCase()
         : '#000';
@@ -573,7 +573,7 @@
         if (i === 0) selected['Color'] = val;
     });
     }
-
+ // size option 
   function renderSizes(product) {
     sizeSelect.innerHTML = '';
     sizeBlock.hidden = true;
@@ -721,10 +721,20 @@
       addToCart();
     }
   });
-
+  //esc to exit modal (overlay)
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-  });
+    if (e.key === 'Escape' ) return;
+
+    //close if modal is currently open
+    const isOpen = modal.classlist.contains('is-open') || modal.getAttribute('aria-hidden') === 'false'
+    if (isOpen) {
+    e.preventDefault();
+    closeModal();
+    }
+}, true);
+
+
+
 })();
 </script>
 

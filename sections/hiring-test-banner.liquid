@@ -43,7 +43,7 @@
     </div>
   </div>
 
-  <!-- STRIP -->
+  <!-- BOTTOM STRIP -->
   {% if section.settings.strip_text != blank %}
     <div class="ht-banner__strip">
       {{ section.settings.strip_text | escape }}
@@ -273,7 +273,7 @@ color: #000000;
 
 /* mobile css*/
 @media (max-width: 480px) { 
-    /* Keep the top bar on mobile (so TISSOT shows), only hide the yellow CTA */
+
     .ht-banner__topbar {
         display: grid;
         grid-template-columns: auto 1fr auto;
@@ -357,7 +357,7 @@ color: #000000;
         display: inline-flex;
         margin: 0 auto 5px;
     }
-    /* Disable the fill animation on mobile (iOS can "stick" hover on tap) */
+
     .ht-btn::before,
     .ht-btn:hover::before,
     .ht-btn:active::before,
