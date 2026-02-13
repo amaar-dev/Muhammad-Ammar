@@ -11,13 +11,68 @@
   "sections": {
     "main": {
       "type": "main-page",
+      "disabled": true,
       "settings": {
         "padding_top": 28,
         "padding_bottom": 28
       }
+    },
+    "hiring_test_grid_T3gLXH": {
+      "type": "hiring-test-grid",
+      "blocks": {
+        "product_qbnQ6V": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_VcRi4k": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_pYdgM7": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_hyDMKf": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_VnwV8E": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        },
+        "product_JTQgRz": {
+          "type": "product",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_qbnQ6V",
+        "product_VcRi4k",
+        "product_pYdgM7",
+        "product_hyDMKf",
+        "product_VnwV8E",
+        "product_JTQgRz"
+      ],
+      "name": "Hiring Test - Grid",
+      "settings": {
+        "heading": "Tisso vison in the wild"
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "hiring_test_grid_T3gLXH"
   ]
 }
