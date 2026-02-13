@@ -498,6 +498,7 @@
   const sizeSelect = modal.querySelector('[data-variant="size"]');
 
   const addBtn  = modal.querySelector('[data-add-to-cart]');
+  const SOFT_WINTER_JACKET_ID = 48146993152255;  //bonus add jacket feature
   const errorEl = modal.querySelector('[data-error]');
 
   let activeProduct = null;
@@ -653,12 +654,29 @@
 
     addBtn.disabled = true;
     try {
+        // First: ADD SELECTED PRODUCT TO CART
       const res = await fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ id: variant.id, quantity: 1 })
       });
-      if (!res.ok) throw new Error('Add to cart failed');
+      if (!res.ok) throw new Error('Failed to Add to Cart');
+
+      // Secondly: BONUS - ADD JACKET TO CART IF NOT ALREADY ADDED AND IF MAIN PRODUCT IS NOT THE JACKET ITSELF
+      const cartRes = await fetch('/cart.js', {headers: {'Accept': 'application/json'} });
+      const cart = cartRes.ok ? await cartRes.json() : null;
+      const alreadyHasJacket = cart?.items?.some(item => item.variant.id === SOFT_WINTER_JACKET_ID);
+
+      if (!alreadyHasJacket) {
+        const jacketRes = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ id: SOFT_WINTER_JACKET_ID, quantity: 1 })
+        });
+      } catch (e) {
+        // If jacket add fails
+        console.warn('Could not add jacket to cart:', e);
+    }
 
       closeModal();
     } catch (e) {
