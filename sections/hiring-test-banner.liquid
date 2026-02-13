@@ -273,15 +273,29 @@ color: #000000;
 
 /* mobile css*/
 @media (max-width: 480px) { 
-    .ht-banner__topbar .ht-btn--yellow {
+    .ht-banner__topbar, .ht-btn--yellow {
         display: none;
+    }
+    .ht-banner__topbar {
+        grid-template-columns: auto 1fr auto;
+        gap: 12px;
+        padding: 10px 20px;
     }
     .ht-banner {
         height: auto;
     }
     .ht-banner__brand {
-        justify-self: start;
+        justify-self: center;
         font-size: 14px;
+        white-space: nowrap;
+        overflow: visible;
+    }
+    .ht-banner__tagline {
+        justify-self: center;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.2;
+        padding: 0 8px;
     }
     .ht-banner__imageArea {
         height: 560px;
@@ -325,8 +339,15 @@ color: #000000;
         display: inline-flex;
         position: static;
         display: block;
-        margin-bottom: 25px;
-
+        margin-bottom: 20px;
+}
+    .htn-btn::before {
+        display: none;
+        content: none;
+    }
+    .ht-btn,
+    .ht-btn:hover { 
+        transition: none;
     }
 
 
