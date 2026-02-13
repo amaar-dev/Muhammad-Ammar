@@ -286,7 +286,7 @@ color: #000000;
     }
     .ht-banner__imageArea {
         height: 560px;
-        background-position: left center;
+        background-position: bottom left;
     }
     .ht-banner__inner {
         padding: 0 20px;
@@ -299,7 +299,14 @@ color: #000000;
         text-align: center;
         max-width: 100%;
     }
-    .ht-banner__title,
+    .ht-banner__title{
+        justify-content: center;
+        position: static;
+        left: auto;
+        top: auto;
+        right: auto;
+        bottom: auto;
+    }    
     .ht-banner__desc,
     .ht-btn--black {
         position: static;
@@ -320,12 +327,6 @@ color: #000000;
         margin: 0 auto;
         display: inline-flex;
     }
-    .ht-btn--black::before {
-        background: #f1d400;
-    }
-    .ht-btn--black:hover {
-        color: #111;
-        border-color: #f1d400;       
 
 }
 </style>
