@@ -245,7 +245,17 @@
   letter-spacing: -0.02em;
   text-transform: capitalize;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
+/* Hover and active take fetched color from variant data*/
+.ht-variant__btn:hover {
+  background: var(--variant-color, #000);
+  color: #fff;
+}
+.ht-variant__btn.is-active {
+  background: var(--variant-color, #000);
+  color: #fff;
+}    
 
 .ht-variant__btn + .ht-variant__btn{
   border-left: 0.5px solid #000;
@@ -474,7 +484,6 @@
   const priceEl = modal.querySelector('.ht-modal__price');
   const descEl  = modal.querySelector('.ht-modal__desc');
 
-  // IMPORTANT: these must match your HTML exactly (lowercase)
   const colorBlock = modal.querySelector('[data-variant-block="color"]');
   const sizeBlock  = modal.querySelector('[data-variant-block="size"]');
 
@@ -515,7 +524,7 @@
     errorEl.hidden = true;
   }
 
-  // product.options is ARRAY OF OBJECTS: [{name, position, values}, ...]
+  // product.options is ARRAY OF OBJECTS: [{name, position, values}
   function getOptionMeta(product, targets) {
     const opts = product.options || [];
     const tset = targets.map(t => t.toLowerCase());
@@ -537,6 +546,13 @@
         btn.className = 'ht-variant__btn' + (i === 0 ? ' is-active' : '');
         btn.textContent = val;
         btn.dataset.value = val;
+        btn.dataset.value = val;
+
+        //Safe color parsing
+        const safeColor = val && CSS.supports('color', val.toLowerCase())
+        ? val.toLowerCase()
+        : '#000';
+        btn.style.setProperty('--variant-color', safeColor);
 
         btn.addEventListener('click', () => {
             selected['Color'] = val;
@@ -577,7 +593,7 @@
 }
 
   function findMatchingVariant(product) {
-    // Shopify .js gives variants with option1/option2 AND options:[...]
+    // Shopify .js gives variants 
     const opts = product.options || []; // objects in order
     return (product.variants || []).find(v => {
       for (let i = 0; i < opts.length; i++) {
@@ -648,9 +664,6 @@
   document.addEventListener('click', async (e) => {
     const trigger = e.target.closest('.ht-card__trigger');
     if (trigger) {
-      console.log('HANDLE CLICKED: ', trigger.dataset.productHandle)   //HANDLE LOG for debugging// remove if not needed
-      e.preventDefault();
-      e.stopPropagation();
       try {
         await loadProduct(trigger.dataset.productHandle);
         openModal();
