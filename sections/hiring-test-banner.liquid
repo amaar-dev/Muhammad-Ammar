@@ -273,13 +273,16 @@ color: #000000;
 
 /* mobile css*/
 @media (max-width: 480px) { 
-    .ht-banner__topbar, .ht-btn--yellow {
-        display: none;
-    }
+    /* Keep the top bar on mobile (so TISSOT shows), only hide the yellow CTA */
     .ht-banner__topbar {
+        display: grid;
         grid-template-columns: auto 1fr auto;
         gap: 12px;
         padding: 10px 20px;
+    }
+
+    .ht-banner__topbar .ht-btn--yellow {
+        display: none;
     }
     .ht-banner {
         height: auto;
@@ -350,19 +353,23 @@ color: #000000;
         
     }
     .ht-btn--black {
-        margin: 0 auto;
-        display: inline-flex;
         position: static;
-        display: block;
-        margin-bottom: 5px;
-}
-    .htn-btn::before {
-        display: none;
-        content: none;
+        display: inline-flex;
+        margin: 0 auto 5px;
+    }
+    /* Disable the fill animation on mobile (iOS can "stick" hover on tap) */
+    .ht-btn::before,
+    .ht-btn:hover::before,
+    .ht-btn:active::before,
+    .ht-btn:focus::before {
+        content: none !important;
+        display: none !important;
         width: 0 !important;
     }
     .ht-btn,
-    .ht-btn:hover { 
+    .ht-btn:hover,
+    .ht-btn:active,
+    .ht-btn:focus {
         transition: none !important;
     }
 
