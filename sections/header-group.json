@@ -55,27 +55,10 @@
         "padding_top": 20,
         "padding_bottom": 20
       }
-    },
-    "hiring_test_banner_pwMnbx": {
-      "type": "hiring-test-banner",
-      "name": "Hiring Test - Banner",
-      "settings": {
-        "bg_image": "shopify://shop_images/img_banner_bckgrd.png",
-        "brand_text": "TISSOT",
-        "tagline_text": "Find the ideal gift for your loved ones.",
-        "top_cta_label": "Choose Gift",
-        "top_cta_url": "https://muhammad-ammar-48-teststore.myshopify.com/collections/all",
-        "heading": "Your Ultimate Gift Guide",
-        "body_text": "Discover joy with our curated gift selection. \nFind the perfect present for every occasion and make moments unforgettable.",
-        "strip_text": "FREE SHIPPING ON ORDERS EXCEEDING $100!",
-        "bottom_cta_label": "SHOP NOW",
-        "bottom_cta_url": "https://muhammad-ammar-48-teststore.myshopify.com/collections/all"
-      }
     }
   },
   "order": [
     "announcement-bar",
-    "header",
-    "hiring_test_banner_pwMnbx"
+    "header"
   ]
 }
