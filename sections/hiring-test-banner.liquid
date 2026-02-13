@@ -279,6 +279,10 @@ color: #000000;
     .ht-banner {
         height: auto;
     }
+    .ht-banner__brand {
+        justify-self: center;
+        font-size: auto;
+    }
     .ht-banner__imageArea {
         height: 560px;
         background-position: bottom left;
@@ -299,8 +303,7 @@ color: #000000;
         padding: 0 16px;
     }
     .ht-banner__title,
-    .ht-banner__desc,
-    .ht-btn--black {
+    .ht-banner__desc{
         position: static;
         display: block;
     }
@@ -308,23 +311,23 @@ color: #000000;
         margin: 0 0 10px;
         font-size: 30px;
         font-weight: 500;
-        bottom: 335px;
-        top: 50px;
+        margin-top: 0;
         text-align: center;
     }    
     .ht-banner__desc {
         margin: 0 0 18px;
         display: block;
         font-size: 16px;
-        margin-bottom: 20.48px;
-        bottom: 270px;
+        margin-top: 10px;
         text-align: center;
         
     }
     .ht-btn--black {
-        margin: 0;
+        margin: 0 auto;
         display: inline-flex;
-        bottom: 35px;
+        position: absolute;
+        bottom: 85%;
+        display: block;
 
     }
 
